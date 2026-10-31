@@ -4,7 +4,7 @@
 
 ## 1. 분석 대상
 
-- CSV 폴더: `C:\Users\user\Documents\CheonanAsan-LifeArea\data\전처리파일(csv)`
+- CSV 폴더: `data/전처리파일(csv) (저장소 미포함)`
 - CSV 파일 수: 11
 - 파일 자동 탐색: 사용
 

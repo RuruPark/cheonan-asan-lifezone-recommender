@@ -5,7 +5,7 @@
 이 프로젝트는 Next.js가 아니라 정적 HTML/CSS/JS 웹앱입니다. `src/main.js`가 `src/components/app.js`를 불러와 UI를 렌더링하고, `scripts/dev-server.mjs`가 프로젝트 루트를 정적 파일로 서빙합니다.
 
 ```powershell
-cd C:\Users\user\Documents\CheonanAsan-LifeArea
+cd cheonan-asan-lifezone-recommender
 node scripts\dev-server.mjs
 ```
 
@@ -83,9 +83,9 @@ window.__APP_CONFIG__ = {
 
 네이버 Maps Application의 Web 서비스 URL에는 호스트 도메인인 `http://rurupark.github.io`를 등록합니다. GitHub Pages 실제 접속 주소는 보통 `https://rurupark.github.io/alldam-project/` 형식이지만, 네이버 Application에는 경로가 포함된 주소가 아니라 호스트 도메인을 등록합니다. Dynamic Map은 네이버 Maps Application에서 선택되어 있어야 합니다.
 
-GitHub Pages 같은 정적 배포에서는 Client Secret을 사용할 수 없습니다. `NAVER_MAP_CLIENT_SECRET`은 프론트엔드 코드에 노출하지 말고, 추후 Directions 5 API를 연결할 때 별도 백엔드 또는 서버리스 프록시에서만 사용해야 합니다.
+GitHub Pages 같은 정적 배포에서는 Client Secret을 사용할 수 없습니다. `NAVER_MAP_CLIENT_SECRET`은 프론트엔드 코드에 노출하지 않고, Vercel 서버리스 함수(`api/commute/`)에서만 사용합니다. 그래서 자동차·도보 실제 경로 조회는 Vercel 배포 환경에서만 동작합니다.
 
-이번 단계에서는 네이버 Directions 5 API를 호출하지 않습니다. 지도 위 연결선은 실제 길찾기 경로가 아니라 직장 좌표와 생활권 좌표를 잇는 보조선입니다.
+지도 위 연결선은 실제 길찾기 경로가 아니라 직장 좌표와 생활권 좌표를 잇는 보조선입니다.
 
 현재 읍면동 경계는 국토교통부 센서스경계 행정동경계 SHP를 WGS84(EPSG:4326) GeoJSON으로 변환한 뒤 천안·아산 지역만 추출한 실제 행정동경계 데이터입니다. 네이버 지도 Client ID가 있으면 실제 네이버 지도 위에 행정동 경계를 함께 표시할 수 있고, Client ID가 없으면 fallback 지도로 계속 동작합니다.
 

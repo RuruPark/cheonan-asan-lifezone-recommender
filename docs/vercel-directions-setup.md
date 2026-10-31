@@ -36,7 +36,7 @@ NAVER_DIRECTIONS_BASE_URL=https://naveropenapi.apigw.ntruss.com/map-direction/v1
 - `NAVER_DIRECTIONS_PARSE_FAILED`: 네이버 응답 구조에서 통근시간을 읽지 못했다.
 - `NETWORK_ERROR`: 서버리스 함수에서 네이버 API 호출에 실패했다.
 
-GitHub Pages에는 서버리스 API가 없으므로 자동차 길찾기는 실패 안내로 표시될 수 있다. 도보와 대중교통은 현재 거리 기반 추정값을 유지한다.
+GitHub Pages에는 서버리스 API가 없으므로 자동차·도보 길찾기는 실패 안내로 표시된다. 실패한 경우 거리 기반 추정 시간을 대신 표시하지 않는다.
 
 ## ODsay 대중교통 URI/Web Key 설정
 

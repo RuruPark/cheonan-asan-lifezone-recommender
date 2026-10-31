@@ -2,10 +2,9 @@
 
 ## 1. 현재 단계
 
-- 현재는 UI-first 단계이며, 실제 공공데이터 대신 점수산정 기준을 반영한 전처리 완료 mock 데이터를 사용한다.
-- 최종 데이터 전처리 방식은 실제 공공데이터 확보 후 보정할 수 있다.
-- 현재 구현의 목적은 UI와 점수산정 구조를 검증하는 것이다.
-- mock 데이터는 `src/data/mockLifeZones.js`에 있으며, 시연용 데이터임을 코드 주석으로 명시한다.
+- 개발 초기에는 UI와 점수산정 구조를 먼저 검증하기 위해 mock 데이터(`src/data/mockLifeZones.js`)를 사용했다.
+- 현재는 전처리 CSV로 생성한 `src/data/generatedLifeZones.js`를 기본 데이터로 사용하며, mock 데이터는 fallback으로만 남겨 두었다.
+- 실제 데이터 기반 생성 방식은 10장, 실제 길찾기 API 연동은 11장에 정리했다.
 
 ## 2. 생활권 단위
 
@@ -154,19 +153,16 @@ totalScore =
 
 ## 6. 현재 UI 구현과 실제 데이터 적용의 차이
 
-- 현재는 `getLifeZoneDataset()`이 제공하는 mock 데이터 기반이다.
-- 실제 서비스에서는 원천 공공데이터를 전처리해 동일한 `LifeZone` 구조로 변환한다.
-- UI 컴포넌트는 데이터 출처가 mock인지 실제 공공데이터인지와 무관하게 동일하게 동작해야 한다.
-- 현재 저장소 함수는 `mockLifeZones`를 반환하지만, UI는 데이터 저장소를 통해 받은 `lifeZones → calculateLifeZoneScores → assignRelativeGrades → getTopAndLowZones → ResultMap / ResultSidePanel` 흐름을 따른다.
+- `getLifeZoneDataset()`은 실제 공공데이터 기반 `generatedLifeZones`를 우선 반환하고, 데이터가 없을 때만 `mockLifeZones`를 사용한다.
+- 원천 공공데이터는 전처리 후 mock 데이터와 동일한 `LifeZone` 구조로 변환한다.
+- UI 컴포넌트는 데이터 출처가 mock인지 실제 공공데이터인지와 무관하게 동일하게 동작한다.
+- UI는 데이터 저장소를 통해 받은 `lifeZones → calculateLifeZoneScores → assignRelativeGrades → getTopAndLowZones → ResultMap / ResultSidePanel` 흐름을 따른다.
 
 ## 7. 추후 확장 방향
 
-- 실제 공공데이터 연동
-- 행정동 polygon 기반 공간 집계
 - 생활권 군집화
 - 인구·이동 데이터 반영
-- 교통 API 연계
-- LLM 기반 추천 사유 설명 생성
+- 추천 사유 설명 문구 고도화
 - B2G/B2B 확장
 
 ## 8. 통근 점수 결합 방식
@@ -192,7 +188,6 @@ totalScore =
 - 변환 실패, 좌표계 불확실, 천안·아산 feature 미식별 상태에서는 기존 샘플 경계 데이터를 유지한다.
 - 네이버 지도 Client ID가 있으면 지도 위에 직장 읍면동 경계와 매칭되는 생활권 경계를 표시한다.
 - Client ID가 없거나 지도 로딩에 실패하면 기존 fallback 지도 UI를 유지한다.
-- 이번 단계에서도 Directions 5 API, 대중교통 API, 백엔드 서버는 추가하지 않는다.
 
 ## 10. 실제 CSV 기반 생활권 점수 생성 방식
 
@@ -208,15 +203,14 @@ totalScore =
 - 리 정보가 있는 주소 데이터는 `riHighlights`로 보조 집계하지만, 리 경계 데이터가 없으므로 지도 polygon은 행정동 단위로 유지한다.
 - `getLifeZoneDataset()`은 `generatedLifeZones`가 있으면 실제 CSV 기반 데이터를 우선 사용하고, 없거나 비어 있으면 `mockLifeZones`를 fallback으로 사용한다.
 - 결과 카드는 `riHighlights`가 있는 생활권에 한해 주요 리 인프라를 최대 3개까지 표시한다.
-- 이번 단계에서도 Directions 5 API, 대중교통 API, 주소 지오코딩 API, 백엔드 서버는 추가하지 않는다.
 
 ## 11. 통근 현실성 필터와 실제 길찾기 API 확장
 
-- 현재 통근시간은 실제 길찾기 API가 아니라 `src/utils/commuteEstimator.js`의 거리 기반 fallback 추정값이다.
+- 초기에는 `src/utils/commuteEstimator.js`의 거리 기반 추정값으로 통근시간을 계산했다. 현재는 실제 길찾기 API가 성공한 값만 통근시간으로 표시하고 점수에 반영하며, 거리 기반 추정값을 실제 값처럼 표시하지 않는다.
 - 추천 후보 48개는 먼저 모두 점수화한 뒤, 추천 상위 2개를 고를 때 통근수단별 현실성 필터를 적용한다.
 - 도보는 희망 통근시간의 25% 또는 10분 중 큰 값을 허용오차로 사용해 과도하게 먼 후보를 상위 추천에서 제외한다.
 - 자동차는 희망 통근시간의 30% 또는 15분 중 큰 값, 대중교통은 35% 또는 20분 중 큰 값을 허용오차로 사용한다.
 - 현실성 필터는 추천 상위 후보 산출에만 적용하며, 비추천 후보에는 통근 조건과 인프라 점수가 낮은 후보가 포함될 수 있다.
-- 자동차 실제 통근시간은 추후 네이버 Directions 5를 서버리스 또는 백엔드에서 호출해 반영할 수 있다.
-- 네이버 Directions 5는 자동차 경로 중심이므로 도보는 TMAP 보행자 경로 API, 대중교통은 ODsay 또는 TMAP 대중교통 API를 별도로 검토한다.
-- 최종 경진대회 제출용 API 연동은 서버리스 API나 백엔드를 통해 Client Secret을 보호하는 구조로 설계해야 한다.
+- 자동차는 네이버 Directions 5, 대중교통은 ODsay, 도보는 TMAP 보행자 경로 API로 실제 통근시간을 조회한다.
+- Naver Client Secret과 TMAP appKey는 Vercel 서버리스 함수에서만 사용해 프론트엔드에 노출하지 않는다.
+- 도보는 실제 경로 결과가 60분을 넘으면 TOP 추천에서 제외하고, 희망 통근시간 초과분은 통근 중요도에 따라 패널티로 반영한다.
